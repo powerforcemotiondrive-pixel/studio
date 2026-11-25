@@ -781,11 +781,304 @@
     .section-header-card { padding: 16px 18px; }
     .section-header-title { font-size: 19px; }
     .card { padding: 18px 16px; }
+    
+    .stage-card { padding: 16px 14px; margin-bottom: 16px; }
+    .section-banner { padding: 18px 16px; min-height: 140px; }
+    .section-banner-title { font-size: 19px; }
+    .scenario-spotlight { padding: 12px 14px; }
+    .scenario-spotlight-title { font-size: 15px; }
+    .stage-instruction-box { padding: 10px 12px; font-size: 12.5px; }
+    .selection-status-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .word-grid { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 8px; }
+    .word-tile { padding: 10px 12px; font-size: 13px; }
+    .clip-nav { max-height: 96px; }
+    .clip-num { min-width: 32px; height: 30px; font-size: 11px; padding: 0 6px; }
     .word-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
     .word-tile { padding: 10px 10px; font-size: 12.5px; }
     .gap-input { width: 105px; padding: 3px 6px; font-size: 12px; }
     .clips-nav { gap: 4px; overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
     .clip-num { min-width: 34px; height: 32px; font-size: 12px; padding: 0 6px; }
+  }
+
+
+  /* --- SECTION PICTURE BANNERS & 3-STAGE WORKFLOW UX --- */
+  .section-banner-shell {
+    margin-bottom: 22px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #0f172a;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  }
+  .section-banner {
+    position: relative;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, #0f294a, #0369a1);
+  }
+  .section-banner img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.45;
+  }
+  .section-banner-scrim {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 10% 20%, rgba(2, 132, 199, 0.28) 0%, transparent 60%),
+      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0.92) 100%);
+    background-size: 100% 100%, 24px 24px, 24px 24px, 100% 100%;
+  }
+  .section-banner-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+  }
+  .section-banner-kicker {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-banner-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: #ffffff;
+    margin: 0 0 6px;
+    line-height: 1.25;
+  }
+  .section-banner-desc {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .section-banner-stats {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .banner-stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 9999px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-family: ui-monospace, Menlo, monospace;
+    color: #ffffff;
+  }
+  .banner-stat-pill.ok {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(52, 211, 153, 0.4);
+    color: #6ee7b7;
+  }
+
+  /* 3-Stage Workflow Architecture */
+  .stage-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    transition: border-color 0.15s ease;
+  }
+  .stage-card:focus-within {
+    border-color: #cbd5e1;
+  }
+  .stage-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .stage-head-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stage-num-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+  .stage-num-badge.amber {
+    background: #d97706;
+    color: #ffffff;
+  }
+  .stage-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+  }
+  .stage-help-text {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+  }
+  .stage-instruction-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--body);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .stage-instruction-icon {
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Scenario selection spotlight */
+  .scenario-spotlight {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 14px;
+  }
+  .scenario-spotlight-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .scenario-spotlight-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+  }
+  .scenario-spotlight-hint {
+    font-size: 13px;
+    color: var(--body);
+    margin: 4px 0 0;
+    line-height: 1.5;
+  }
+
+  /* Selection Status Bar in Stage 3 */
+  .selection-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+  .selection-count-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: #92400e;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+  }
+
+  /* Audio player enhanced cockpit console */
+  .audio-console {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 16px 18px;
+    color: #f8fafc;
+  }
+  .audio-console-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  .audio-console audio {
+    width: 100%;
+    height: 42px;
+    filter: invert(1) hue-rotate(180deg);
+    border-radius: 6px;
+  }
+  .audio-console-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .audio-console-spd-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  .audio-console .spd-btn {
+    background: #1e293b;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+  .audio-console .spd-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
   }
 
 </style>
@@ -1025,14 +1318,20 @@
 
   function renderReal() {
     var drill = DATA.realDrills[state.realIdx];
-    if (!drill) return '<div class="card">No Real ATC clips included in this package.</div>';
+    if (!drill) return '<div class="stage-card">No Section 1 clips included in this package.</div>';
+
     var words = getShuffledWords(drill);
     var sel = state.selectedWords[drill.id] || {};
     var checked = !!state.checkedReal[drill.id];
+    var selCount = Object.values(sel).filter(Boolean).length;
 
     var navBtns = DATA.realDrills.map(function(d, idx) {
-      var cls = 'clip-num' + (idx === state.realIdx ? ' active' : '') + (state.checkedReal[d.id] ? ' done' : '');
-      return '<button class="' + cls + '" data-ridx="' + idx + '">' + String(d.indexNumber).padStart(2, '0') + '</button>';
+      var isCur = idx === state.realIdx;
+      var isDone = !!state.checkedReal[d.id];
+      var cls = 'clip-num' + (isCur ? ' active' : '') + (isDone ? ' done' : '');
+      var numLabel = String(idx + 1).padStart(2, '0');
+      return '<button class="' + cls + '" data-ridx="' + idx + '" title="' + esc(d.title) + '">' +
+        numLabel + (isDone ? ' ✓' : '') + '</button>';
     }).join('');
 
     var summaryHtml = '';
@@ -1043,9 +1342,9 @@
         if (w.heard && picked) hits++;
         else if (!w.heard && picked) wrong++;
       });
-      summaryHtml = '<div class="feedback-box"><strong>How you did:</strong> You identified <strong>' + hits + ' of ' + drill.heardWords.length + '</strong> spoken words/phrases' +
-        (wrong > 0 ? ', and selected <strong>' + wrong + '</strong> distractor(s) not heard in the clip.' : ' with zero distractors selected.') +
-        ' Review the transcript below with the key words highlighted.</div>';
+      summaryHtml = '<div class="feedback-box" style="margin-top:16px;"><strong>Evaluation Result:</strong> You correctly identified <strong>' + hits + ' of ' + drill.heardWords.length + '</strong> spoken phrases' +
+        (wrong > 0 ? ', and selected <strong>' + wrong + '</strong> distractor(s) that were not in the recording.' : ' with zero distractors selected!') +
+        ' Review the verified transcript below with key phrases highlighted in amber.</div>';
     }
 
     var tilesHtml = words.map(function(w) {
@@ -1055,9 +1354,9 @@
       if (!checked) {
         if (picked) cls += ' selected';
       } else {
-        if (w.heard && picked) { cls += ' ok'; note = 'Correct — heard in clip'; }
-        else if (w.heard && !picked) { cls += ' missed'; note = 'Missed — was in clip'; }
-        else if (!w.heard && picked) { cls += ' wrong'; note = 'Not heard in clip'; }
+        if (w.heard && picked) { cls += ' ok'; note = 'Correct — spoken in audio'; }
+        else if (w.heard && !picked) { cls += ' missed'; note = 'Missed — was in audio'; }
+        else if (!w.heard && picked) { cls += ' wrong'; note = 'Distractor — not spoken'; }
       }
       return '<button class="' + cls + '" data-word="' + esc(w.text) + '"' + (checked ? ' disabled' : '') + '>' +
         esc(w.text) + (note ? '<span class="word-state">' + note + '</span>' : '') + '</button>';
@@ -1065,51 +1364,106 @@
 
     var transcriptHtml = checked ? (
       '<div class="transcript">' +
-        '<h3 style="margin:0 0 10px;font-size:16px;">Actual Transcript</h3>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
+          '<h3 style="margin:0;font-size:16px;color:var(--ink);">Verified Radio Transcript</h3>' +
+          '<span class="badge" style="background:#f1f5f9;color:var(--muted);font-size:11px;">Key phrases highlighted</span>' +
+        '</div>' +
         drill.transcriptLines.map(function(line) {
           return '<div class="t-line"><span class="t-speaker">' + esc(line.speaker) + '</span>' + highlightTranscript(line.text, drill.heardWords) + '</div>';
         }).join('') +
       '</div>'
     ) : '';
 
-    return '<div class="section-header-card">' +
-        '<div>' +
-          '<p class="section-header-kicker">Section 1 · Real Pilot–Controller Recordings</p>' +
-          '<h1 class="section-header-title">Select Words You Heard</h1>' +
-          '<p class="section-header-sub">Listen to real ATC clips, select every word or phrase you heard, and review the verified transcript.</p>' +
-        '</div>' +
-        '<div class="section-header-stats">' +
-          '<div><p class="stat-lbl">Clips</p><p class="stat-val">' + DATA.realDrills.length + '</p></div>' +
-          '<div><p class="stat-lbl">Practiced</p><p class="stat-val" style="color:var(--ok-ink);">' + Object.keys(state.checkedReal).length + '</p></div>' +
+    var bannerImg = DATA.images.realAtc || 'assets/section-real-atc.jpg';
+
+    return '<div class="section-banner-shell">' +
+        '<div class="section-banner">' +
+          '<img src="' + esc(bannerImg) + '" alt="Section 1 Banner" />' +
+          '<div class="section-banner-scrim"></div>' +
+          '<div class="section-banner-content">' +
+            '<div class="section-banner-kicker"><span>ENAC GSEA</span> · <span>Section 1 · VHF Radio Recordings</span></div>' +
+            '<h1 class="section-banner-title">Real Pilot–Controller Audio Word Identification</h1>' +
+            '<p class="section-banner-desc">Train your ear on unfiltered aeronautical communications. Listen to authentic cockpit and tower recordings, identify spoken phraseology, and verify with official transcripts.</p>' +
+          '</div>' +
+          '<div class="section-banner-stats">' +
+            '<span class="banner-stat-pill"><strong>' + DATA.realDrills.length + '</strong> Scenarios Available</span>' +
+            '<span class="banner-stat-pill' + (Object.keys(state.checkedReal).length > 0 ? ' ok' : '') + '"><strong>' + Object.keys(state.checkedReal).length + '</strong> Practiced</span>' +
+          '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="clip-nav">' + navBtns + '</div>' +
-      '<div class="card">' +
-        '<div class="meta">Clip ' + (state.realIdx + 1) + ' of ' + DATA.realDrills.length + '</div>' +
-        '<h2 style="margin:0 0 4px;font-size:21px;">' + esc(drill.title) + '</h2>' +
-        '<p style="margin:0;color:var(--muted);font-size:14px;">' + esc(drill.contextHint) + '</p>' +
-        '<div class="steps-strip">' +
-          '<div><strong>Step 1.</strong> Listen to the real ATC clip (replay as often as you need).</div>' +
-          '<div><strong>Step 2.</strong> Click every word or phrase you heard in the clip.</div>' +
-          '<div><strong>Step 3.</strong> Click <strong>Check My Answers</strong> to see the full transcript.</div>' +
+
+      '<!-- STAGE 1: SELECT TRANSMISSION -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 1</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Select Radio Scenario (' + (state.realIdx + 1) + ' of ' + DATA.realDrills.length + ')</h2>' +
+              '<p class="stage-help-text">Choose an authentic pilot–controller transmission to practice from the 18 available scenarios below.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="clip-nav">' + navBtns + '</div>' +
+        '<div class="scenario-spotlight">' +
+          '<div class="scenario-spotlight-top">' +
+            '<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;">Scenario ' + (state.realIdx + 1) + ' of ' + DATA.realDrills.length + '</span>' +
+            '<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);">Archive Reference: #' + drill.indexNumber + '</span>' +
+          '</div>' +
+          '<h3 class="scenario-spotlight-title">' + esc(drill.title) + '</h3>' +
+          '<p class="scenario-spotlight-hint"><strong>Situation Brief:</strong> ' + esc(drill.contextHint) + '</p>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- STAGE 2: LISTEN TO TRANSMISSION -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 2</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Listen to Radio Transmission</h2>' +
+              '<p class="stage-help-text">Play the recording as many times as you need. There is no time limit and no penalty for replaying.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="stage-instruction-box">' +
+          '<span class="stage-instruction-icon">💡</span>' +
+          '<div><strong>Student Tip:</strong> Focus on callsigns, headings, flight levels, runway designations, and operational requests. Replay specific sections if needed.</div>' +
         '</div>' +
         '<div class="audio-box">' +
           '<audio id="clip-audio" controls src="' + esc(drill.audioSrc) + '"></audio>' +
-          '<div class="speed-row">Playback speed:' +
+          '<div class="speed-row">' +
+            '<span>Playback speed:</span>' +
             '<button class="spd-btn' + (state.speed === 0.85 ? ' active' : '') + '" data-spd="0.85">0.85x (Slower)</button>' +
             '<button class="spd-btn' + (state.speed === 1 ? ' active' : '') + '" data-spd="1">1.0x (Normal)</button>' +
+            '<span style="margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);">VHF Radio Audio · Offline SCORM 1.2</span>' +
           '</div>' +
         '</div>' +
+      '</div>' +
+
+      '<!-- STAGE 3: SELECT WORDS & VERIFY -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 3</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Select Words You Heard &amp; Verify</h2>' +
+              '<p class="stage-help-text">Click every word or phrase you clearly heard in the audio above. Distractor phrases are included that were NOT spoken.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="selection-status-bar">' +
+          '<span id="sel-counter" class="selection-count-chip">' + selCount + ' word' + (selCount === 1 ? '' : 's') + ' selected</span>' +
+          '<span style="color:var(--muted);font-size:12px;">Toggle phrases while listening — playback will NOT reset.</span>' +
+        '</div>' +
         summaryHtml +
-        '<div style="font-size:13px;font-weight:600;color:var(--muted);">Select all words and phrases that you heard:</div>' +
         '<div class="word-grid">' + tilesHtml + '</div>' +
         '<div class="row-between">' +
-          '<div style="display:flex;gap:8px;">' +
-            (!checked ? '<button class="btn btn-primary" id="check-real">Check My Answers</button>' : '<button class="btn" id="retry-real">Try Clip Again</button>') +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+            (!checked ? '<button class="btn btn-primary" id="check-real">Check My Answers</button>' : '<button class="btn" id="retry-real">Try Scenario Again</button>') +
           '</div>' +
           '<div style="display:flex;gap:8px;">' +
-            '<button class="btn" id="prev-real"' + (state.realIdx === 0 ? ' disabled' : '') + '>Previous</button>' +
-            '<button class="btn btn-primary" id="next-real"' + (state.realIdx >= DATA.realDrills.length - 1 ? ' disabled' : '') + '>Next Clip</button>' +
+            '<button class="btn" id="prev-real"' + (state.realIdx === 0 ? ' disabled' : '') + '>← Previous Scenario</button>' +
+            '<button class="btn btn-primary" id="next-real"' + (state.realIdx >= DATA.realDrills.length - 1 ? ' disabled' : '') + '>Next Scenario →</button>' +
           '</div>' +
         '</div>' +
         transcriptHtml +
@@ -1127,7 +1481,7 @@
       }
     }
     var ex = byCat[state.gapIdx] || byCat[0];
-    if (!ex) return '<div class="card">No Section 2 exercises included in this package.</div>';
+    if (!ex) return '<div class="stage-card">No Section 2 exercises included in this package.</div>';
 
     var vals = state.gapValues[ex.id] || {};
     var checked = !!state.checkedGap[ex.id];
@@ -1139,8 +1493,10 @@
     }).join('');
 
     var exNums = byCat.map(function(item, idx) {
-      var cls = 'clip-num' + (idx === state.gapIdx ? ' active' : '') + (state.checkedGap[item.id] ? ' done' : '');
-      return '<button class="' + cls + '" data-gidx="' + idx + '">' + String(idx + 1).padStart(2, '0') + '</button>';
+      var isCur = idx === state.gapIdx;
+      var isDone = !!state.checkedGap[item.id];
+      var cls = 'clip-num' + (isCur ? ' active' : '') + (isDone ? ' done' : '');
+      return '<button class="' + cls + '" data-gidx="' + idx + '">Drill ' + String(idx + 1).padStart(2, '0') + (isDone ? ' ✓' : '') + '</button>';
     }).join('');
 
     var correctCount = 0;
@@ -1162,89 +1518,124 @@
     });
 
     var summaryHtml = checked ? (
-      '<div class="feedback-box"><strong>How you did:</strong> You got <strong>' + correctCount + ' of ' + ex.blanks.length + '</strong> gaps correct. Any corrections are shown in green beside the blank.</div>'
+      '<div class="feedback-box"><strong>Evaluation Result:</strong> You got <strong>' + correctCount + ' of ' + ex.blanks.length + '</strong> gaps correct. Corrections are highlighted in green beside the blank.</div>'
     ) : '';
 
     var scriptHtml = checked && state.showGapScript[ex.id] && ex.spokenScript ? (
-      '<div class="transcript"><h3 style="margin:0 0 8px;font-size:15px;">Full Spoken Script</h3><p style="margin:0;font-size:14px;color:var(--body);">' + esc(ex.spokenScript) + '</p></div>'
+      '<div class="transcript"><h3 style="margin:0 0 8px;font-size:15px;color:var(--ink);">Full Spoken Radio Script</h3><p style="margin:0;font-size:14px;color:var(--body);line-height:1.6;">' + esc(ex.spokenScript) + '</p></div>'
     ) : '';
 
-    return '<div class="section-header-card">' +
-        '<div>' +
-          '<p class="section-header-kicker">Section 2 · European &amp; ICAO Ground Operations</p>' +
-          '<h1 class="section-header-title">VHF Radio Gap-Fill Drills</h1>' +
-          '<p class="section-header-sub">Listen to authentic VHF radio transmissions across ATIS, AFIS, Route Clearance, Ground, Pushback, and Taxiway Movements.</p>' +
-        '</div>' +
-        '<div class="section-header-stats">' +
-          '<div><p class="stat-lbl">Exercises</p><p class="stat-val">' + DATA.gapExercises.length + '</p></div>' +
-          '<div><p class="stat-lbl">Practiced</p><p class="stat-val" style="color:var(--ok-ink);">' + Object.keys(state.checkedGap).length + '</p></div>' +
+    var bannerImg = DATA.images.groundOps || 'assets/section-ground-ops.jpg';
+
+    return '<div class="section-banner-shell">' +
+        '<div class="section-banner">' +
+          '<img src="' + esc(bannerImg) + '" alt="Section 2 Banner" />' +
+          '<div class="section-banner-scrim"></div>' +
+          '<div class="section-banner-content">' +
+            '<div class="section-banner-kicker"><span>ENAC GSEA</span> · <span>Section 2 · European &amp; ICAO Operations</span></div>' +
+            '<h1 class="section-banner-title">VHF Ground Operations Gap-Fill Drills</h1>' +
+            '<p class="section-banner-desc">Practice authentic airport ground communications across ATIS, AFIS, Route Clearance, Ground, Pushback, and Taxiway Movements.</p>' +
+          '</div>' +
+          '<div class="section-banner-stats">' +
+            '<span class="banner-stat-pill"><strong>' + DATA.gapExercises.length + '</strong> Drills Available</span>' +
+            '<span class="banner-stat-pill' + (Object.keys(state.checkedGap).length > 0 ? ' ok' : '') + '"><strong>' + Object.keys(state.checkedGap).length + '</strong> Practiced</span>' +
+          '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="tabs">' + catTabs + '</div>' +
-      '<div class="clip-nav">' + exNums + '</div>' +
-      '<div class="card">' +
-        '<div class="meta">' + esc(ex.categoryLabel) + ' · ' + esc(ex.airportIcao) + ' ' + esc(ex.airportName) + ' · ' + esc(ex.facility) + '</div>' +
-        '<h2 style="margin:0 0 4px;font-size:21px;">' + esc(ex.title) + '</h2>' +
-        '<div class="steps-strip">' +
-          '<div><strong>Step 1.</strong> Listen to the European/ICAO radio clip.</div>' +
-          '<div><strong>Step 2.</strong> Type the missing numbers, runways, taxiways, or words into each blank.</div>' +
-          '<div><strong>Step 3.</strong> Click <strong>Check My Answers</strong> to see how you did.</div>' +
+
+      '<!-- STAGE 1: SELECT CATEGORY & DRILL -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 1</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Select Operational Category &amp; Drill</h2>' +
+              '<p class="stage-help-text">Choose an airport operational service and exercise number.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tabs">' + catTabs + '</div>' +
+        '<div class="clip-nav">' + exNums + '</div>' +
+        '<div class="scenario-spotlight">' +
+          '<div class="scenario-spotlight-top">' +
+            '<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;">' + esc(catNames[state.gapCat] || state.gapCat) + ' · Drill ' + (state.gapIdx + 1) + ' of ' + byCat.length + '</span>' +
+            '<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);">' + esc(ex.airportName || '') + ' (' + esc(ex.airportIcao || '') + ')</span>' +
+          '</div>' +
+          '<h3 class="scenario-spotlight-title">' + esc(ex.title) + '</h3>' +
+          '<p class="scenario-spotlight-hint">' + esc(ex.situationContext || '') + '</p>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- STAGE 2: LISTEN TO TRANSMISSION -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 2</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Listen to Ground VHF Transmission</h2>' +
+              '<p class="stage-help-text">Listen carefully to the controller transmission, noting runways, QNH, taxiways, and clearances.</p>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
         '<div class="audio-box">' +
           '<audio id="gap-audio" controls src="' + esc(ex.audioSrc) + '"></audio>' +
-          '<div class="speed-row">Playback speed:' +
+          '<div class="speed-row">' +
+            '<span>Playback speed:</span>' +
             '<button class="spd-btn' + (state.speed === 0.85 ? ' active' : '') + '" data-spd="0.85">0.85x (Slower)</button>' +
             '<button class="spd-btn' + (state.speed === 1 ? ' active' : '') + '" data-spd="1">1.0x (Normal)</button>' +
-            '<button class="spd-btn" id="toggle-hints" style="margin-left:auto;">' + (state.showHints ? 'Hide Hints' : 'Show B1 Hints') + '</button>' +
+            '<button class="spd-btn" id="toggle-hints" style="margin-left:auto;">' + (state.showHints ? 'Hide Hints' : 'Show Hints') + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- STAGE 3: COMPLETE READBACK & VERIFY -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 3</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Complete Radio Readback &amp; Check Gaps</h2>' +
+              '<p class="stage-help-text">Type the exact aviation phraseology into the blanks, then check your answers.</p>' +
+            '</div>' +
           '</div>' +
         '</div>' +
         summaryHtml +
         '<div class="gap-text">' + renderedText + '</div>' +
         '<div class="row-between">' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-            (!checked ? '<button class="btn btn-primary" id="check-gap">Check My Answers</button>' : '<button class="btn" id="retry-gap">Try Again</button>') +
-            (checked ? '<button class="btn" id="toggle-gap-script">' + (state.showGapScript[ex.id] ? 'Hide Full Script' : 'Show Full Script') + '</button>' : '') +
+            (!checked ? '<button class="btn btn-primary" id="check-gap">Check My Answers</button>' : '<button class="btn" id="retry-gap">Try Drill Again</button>') +
+            (checked && ex.spokenScript ? '<button class="btn" id="toggle-gap-script">' + (state.showGapScript[ex.id] ? 'Hide Spoken Script' : 'Show Spoken Script') + '</button>' : '') +
           '</div>' +
           '<div style="display:flex;gap:8px;">' +
-            '<button class="btn" id="prev-gap"' + (state.gapIdx === 0 ? ' disabled' : '') + '>Previous</button>' +
-            '<button class="btn btn-primary" id="next-gap"' + (state.gapIdx >= byCat.length - 1 ? ' disabled' : '') + '>Next Exercise</button>' +
+            '<button class="btn" id="prev-gap"' + (state.gapIdx === 0 ? ' disabled' : '') + '>← Previous Drill</button>' +
+            '<button class="btn btn-primary" id="next-gap"' + (state.gapIdx >= byCat.length - 1 ? ' disabled' : '') + '>Next Drill →</button>' +
           '</div>' +
         '</div>' +
         scriptHtml +
       '</div>';
   }
 
-  function getFilteredPilotMessages() {
-    if (state.pilotFilter === 'all') return DATA.pilotMessages;
-    return DATA.pilotMessages.filter(function(p) { return p.messageType === state.pilotFilter; });
-  }
-
   function renderPilot() {
     var list = getFilteredPilotMessages();
-    if (list.length === 0) {
-      state.pilotFilter = 'all';
-      list = DATA.pilotMessages;
-      state.pilotIdx = 0;
-    }
     var ex = list[state.pilotIdx] || list[0];
-    if (!ex) return '<div class="card">No Section 3 pilot messages included in this package.</div>';
+    if (!ex) return '<div class="stage-card">No Section 3 pilot messages included in this package.</div>';
 
     var vals = state.pilotValues[ex.id] || {};
     var checked = !!state.checkedPilot[ex.id];
-    var routineCnt = DATA.pilotMessages.filter(function(p) { return p.messageType === 'routine'; }).length;
-    var nonRoutineCnt = DATA.pilotMessages.filter(function(p) { return p.messageType === 'non_routine'; }).length;
 
     var filterTabs = [
-      ['all', 'All Messages (' + DATA.pilotMessages.length + ')'],
-      ['routine', 'Routine (' + routineCnt + ')'],
-      ['non_routine', 'Non-Routine (' + nonRoutineCnt + ')']
+      { id: 'all', label: 'All Calls (' + DATA.pilotMessages.length + ')' },
+      { id: 'routine', label: 'Routine (' + DATA.pilotMessages.filter(function(m) { return m.messageType === 'routine'; }).length + ')' },
+      { id: 'non_routine', label: 'Non-Routine (' + DATA.pilotMessages.filter(function(m) { return m.messageType === 'non_routine'; }).length + ')' }
     ].map(function(f) {
-      return '<button class="tab' + (state.pilotFilter === f[0] ? ' active' : '') + '" data-pfilter="' + f[0] + '">' + esc(f[1]) + '</button>';
+      return '<button class="tab' + (state.pilotFilter === f.id ? ' active' : '') + '" data-pfilter="' + f.id + '">' + f.label + '</button>';
     }).join('');
 
     var exNums = list.map(function(item, idx) {
-      var cls = 'clip-num' + (idx === state.pilotIdx ? ' active' : '') + (state.checkedPilot[item.id] ? ' done' : '');
-      return '<button class="' + cls + '" data-pidx="' + idx + '">' + String(item.indexNumber).padStart(2, '0') + '</button>';
+      var isCur = idx === state.pilotIdx;
+      var isDone = !!state.checkedPilot[item.id];
+      var cls = 'clip-num' + (isCur ? ' active' : '') + (isDone ? ' done' : '');
+      return '<button class="' + cls + '" data-pidx="' + idx + '" title="' + esc(item.title) + '">Call ' + String(idx + 1).padStart(2, '0') + (isDone ? ' ✓' : '') + '</button>';
     }).join('');
 
     var correctCount = 0;
@@ -1260,13 +1651,13 @@
         if (isOk) correctCount++;
       }
       var cls = 'gap-input' + (checked ? (isOk ? ' ok' : ' wrong') : '');
-      var ph = state.showHints ? blank.hint : ('Gap ' + (idx + 1));
+      var ph = state.showHints ? blank.hint : 'Type answer';
       return '<input class="' + cls + '" data-pblank="' + idx + '" value="' + esc(val) + '" placeholder="' + esc(ph) + '"' + (checked ? ' disabled' : '') + ' />' +
         (checked && !isOk ? '<span class="gap-ans">(' + esc(blank.answer) + ')</span>' : '');
     });
 
     var summaryHtml = checked ? (
-      '<div class="feedback-box"><strong>How you did:</strong> You got <strong>' + correctCount + ' of ' + ex.blanks.length + '</strong> gaps correct. Review the Phase of Flight, Situation Context, and Useful Vocabulary below.</div>'
+      '<div class="feedback-box"><strong>Evaluation Result:</strong> You got <strong>' + correctCount + ' of ' + ex.blanks.length + '</strong> gaps correct. See the full debrief below for Phase of Flight, Context &amp; Useful Vocabulary.</div>'
     ) : '';
 
     var debriefHtml = '';
@@ -1274,7 +1665,7 @@
       var vocabItems = (ex.usefulVocabulary || []).map(function(v) {
         return '<div class="vocab-item"><p class="vocab-term">' + esc(v.term) + '</p><p class="vocab-meaning">' + esc(v.meaning) + '</p></div>';
       }).join('');
-      debriefHtml = '<div class="debrief-grid">' +
+      debriefHtml = '<div class="debrief-grid" style="margin-top:20px;">' +
           '<div class="debrief-box">' +
             '<p class="debrief-kicker">Phase of Flight</p>' +
             '<p class="debrief-phase">' + esc(ex.phaseOfFlight) + '</p>' +
@@ -1292,52 +1683,95 @@
     }
 
     var scriptHtml = checked && state.showPilotScript[ex.id] && ex.spokenScript ? (
-      '<div class="transcript"><h3 style="margin:0 0 8px;font-size:15px;">Full Spoken Script</h3><p style="margin:0;font-size:14px;color:var(--body);">' + esc(ex.spokenScript) + '</p></div>'
+      '<div class="transcript"><h3 style="margin:0 0 8px;font-size:15px;color:var(--ink);">Full Spoken Radio Script</h3><p style="margin:0;font-size:14px;color:var(--body);line-height:1.6;">' + esc(ex.spokenScript) + '</p></div>'
     ) : '';
 
     var typeLabel = ex.messageType === 'non_routine' ? 'Non-Routine Pilot Call' : 'Routine Pilot Call';
     var typeColor = ex.messageType === 'non_routine' ? '#b45309' : 'var(--accent)';
+    var bannerImg = DATA.images.pilotMessages || 'assets/section-pilot-messages.jpg';
 
-    return '<div class="section-header-card">' +
-        '<div>' +
-          '<p class="section-header-kicker">Section 3 · Routine &amp; Non-Routine Pilot Messages</p>' +
-          '<h1 class="section-header-title">Pilot Radio Transmissions (3-Gap Drills)</h1>' +
-          '<p class="section-header-sub">Distorted VHF cockpit messages on active European frequencies. Complete 3 gaps to reveal Phase of Flight, Context, and Useful Vocabulary.</p>' +
-        '</div>' +
-        '<div class="section-header-stats">' +
-          '<div><p class="stat-lbl">Messages</p><p class="stat-val">' + DATA.pilotMessages.length + '</p></div>' +
-          '<div><p class="stat-lbl">Practiced</p><p class="stat-val" style="color:var(--ok-ink);">' + Object.keys(state.checkedPilot).length + '</p></div>' +
+    return '<div class="section-banner-shell">' +
+        '<div class="section-banner">' +
+          '<img src="' + esc(bannerImg) + '" alt="Section 3 Banner" />' +
+          '<div class="section-banner-scrim"></div>' +
+          '<div class="section-banner-content">' +
+            '<div class="section-banner-kicker"><span>ENAC GSEA</span> · <span>Section 3 · Cockpit Pilot Calls</span></div>' +
+            '<h1 class="section-banner-title">Routine &amp; Non-Routine Pilot Transmissions</h1>' +
+            '<p class="section-banner-desc">Listen to distorted VHF cockpit radio transmissions across active European frequencies. Fill 3 key gaps to unlock flight phase, context, and useful vocabulary.</p>' +
+          '</div>' +
+          '<div class="section-banner-stats">' +
+            '<span class="banner-stat-pill"><strong>' + DATA.pilotMessages.length + '</strong> Calls Available</span>' +
+            '<span class="banner-stat-pill' + (Object.keys(state.checkedPilot).length > 0 ? ' ok' : '') + '"><strong>' + Object.keys(state.checkedPilot).length + '</strong> Practiced</span>' +
+          '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="tabs">' + filterTabs + '</div>' +
-      '<div class="clip-nav">' + exNums + '</div>' +
-      '<div class="card">' +
-        '<div class="meta"><strong style="color:' + typeColor + ';">' + esc(typeLabel) + '</strong> · <strong style="font-family:ui-monospace,Menlo,monospace;color:var(--ink);">' + esc(ex.frequencyMHz) + ' MHz</strong> · ' + esc(ex.sector) + ' · ' + esc(ex.callsign) + '</div>' +
-        '<h2 style="margin:0 0 4px;font-size:21px;">' + esc(ex.title) + '</h2>' +
-        '<div class="steps-strip">' +
-          '<div><strong>Step 1.</strong> Tune to ' + esc(ex.frequencyMHz) + ' MHz and listen to the distorted VHF cockpit call.</div>' +
-          '<div><strong>Step 2.</strong> Fill the 3 missing details from the pilot’s transmission.</div>' +
-          '<div><strong>Step 3.</strong> Click <strong>Check My Answers</strong> to see Phase of Flight, Context &amp; Vocabulary.</div>' +
+
+      '<!-- STAGE 1: SELECT COCKPIT CALL -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 1</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Select Cockpit Call (' + (state.pilotIdx + 1) + ' of ' + list.length + ')</h2>' +
+              '<p class="stage-help-text">Choose between routine and non-routine cockpit transmissions.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tabs">' + filterTabs + '</div>' +
+        '<div class="clip-nav">' + exNums + '</div>' +
+        '<div class="scenario-spotlight">' +
+          '<div class="scenario-spotlight-top">' +
+            '<span style="font-weight:700;color:' + typeColor + ';font-size:12px;text-transform:uppercase;">' + esc(typeLabel) + '</span>' +
+            '<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink);font-weight:700;">' + esc(ex.frequencyMHz) + ' MHz · ' + esc(ex.sector) + ' · ' + esc(ex.callsign) + '</span>' +
+          '</div>' +
+          '<h3 class="scenario-spotlight-title">' + esc(ex.title) + '</h3>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- STAGE 2: LISTEN TO TRANSMISSION -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 2</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Listen to Distorted Cockpit VHF Call</h2>' +
+              '<p class="stage-help-text">Tune to ' + esc(ex.frequencyMHz) + ' MHz and listen to the pilot’s cockpit transmission.</p>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
         '<div class="audio-box">' +
           '<audio id="pilot-audio" controls src="' + esc(ex.audioSrc) + '"></audio>' +
-          '<div class="speed-row">Playback speed:' +
+          '<div class="speed-row">' +
+            '<span>Playback speed:</span>' +
             '<button class="spd-btn' + (state.speed === 0.85 ? ' active' : '') + '" data-spd="0.85">0.85x (Slower)</button>' +
             '<button class="spd-btn' + (state.speed === 1 ? ' active' : '') + '" data-spd="1">1.0x (Normal)</button>' +
-            '<span style="font-family:ui-monospace,Menlo,monospace;">' + esc(ex.frequencyMHz) + ' MHz · VHF distorted</span>' +
-            '<button class="spd-btn" id="toggle-pilot-hints" style="margin-left:auto;">' + (state.showHints ? 'Hide Hints' : 'Show B1 Hints') + '</button>' +
+            '<span style="font-family:ui-monospace,Menlo,monospace;color:var(--muted);">' + esc(ex.frequencyMHz) + ' MHz · VHF distorted</span>' +
+            '<button class="spd-btn" id="toggle-pilot-hints" style="margin-left:auto;">' + (state.showHints ? 'Hide Hints' : 'Show Hints') + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- STAGE 3: FILL 3 GAPS & UNLOCK DEBRIEF -->' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Stage 3</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Fill 3 Key Details &amp; Unlock Debrief</h2>' +
+              '<p class="stage-help-text">Complete the missing words from the pilot’s transmission to reveal the flight debrief.</p>' +
+            '</div>' +
           '</div>' +
         '</div>' +
         summaryHtml +
         '<div class="gap-text">' + renderedText + '</div>' +
         '<div class="row-between">' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-            (!checked ? '<button class="btn btn-primary" id="check-pilot">Check My Answers</button>' : '<button class="btn" id="retry-pilot">Try Again</button>') +
-            (checked ? '<button class="btn" id="toggle-pilot-script">' + (state.showPilotScript[ex.id] ? 'Hide Full Script' : 'Show Full Script') + '</button>' : '') +
+            (!checked ? '<button class="btn btn-primary" id="check-pilot">Check My Answers</button>' : '<button class="btn" id="retry-pilot">Try Call Again</button>') +
+            (checked ? '<button class="btn" id="toggle-pilot-script">' + (state.showPilotScript[ex.id] ? 'Hide Spoken Script' : 'Show Spoken Script') + '</button>' : '') +
           '</div>' +
           '<div style="display:flex;gap:8px;">' +
-            '<button class="btn" id="prev-pilot"' + (state.pilotIdx === 0 ? ' disabled' : '') + '>Previous</button>' +
-            '<button class="btn btn-primary" id="next-pilot"' + (state.pilotIdx >= list.length - 1 ? ' disabled' : '') + '>Next Message</button>' +
+            '<button class="btn" id="prev-pilot"' + (state.pilotIdx === 0 ? ' disabled' : '') + '>← Previous Call</button>' +
+            '<button class="btn btn-primary" id="next-pilot"' + (state.pilotIdx >= list.length - 1 ? ' disabled' : '') + '>Next Call →</button>' +
           '</div>' +
         '</div>' +
         debriefHtml +
@@ -1394,7 +1828,13 @@
           var w = b.getAttribute('data-word');
           if (!state.selectedWords[drill.id]) state.selectedWords[drill.id] = {};
           state.selectedWords[drill.id][w] = !state.selectedWords[drill.id][w];
-          render();
+          var isPicked = !!state.selectedWords[drill.id][w];
+          b.classList.toggle('selected', isPicked);
+          var selCount = Object.values(state.selectedWords[drill.id] || {}).filter(Boolean).length;
+          var counterEl = document.getElementById('sel-counter');
+          if (counterEl) {
+            counterEl.textContent = selCount + ' word' + (selCount === 1 ? '' : 's') + ' selected';
+          }
         };
       });
       var chk = document.getElementById('check-real');
