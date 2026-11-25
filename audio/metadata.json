@@ -1,6 +1,0 @@
-{
-  "name": "GSEA Audio — ATC Flight Sim Trainer",
-  "description": "Automated LiveATC and VASAviation audio downloader, Documents/GSEA_audio folder organizer, random sequential playback engine, and ATC interaction highlighter for flight simulation training.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="ENAC_GSEA_combined_all" version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  <organizations default="ENAC_GSEA_ORG">
+    <organization identifier="ENAC_GSEA_ORG">
+      <title>Complete Hub (All Ready Sections)</title>
+      <item identifier="ITEM_1" identifierref="RES_1" isvisible="true">
+        <title>Complete Hub (All Ready Sections)</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES_1" type="webcontent" adlcp:scormtype="sco" href="index.html">
+      <file href="index.html" />
+      <file href="assets/hero-banner.jpg" />
+      <file href="assets/section-real-atc.jpg" />
+      <file href="assets/section-ground-ops.jpg" />
+      <file href="assets/section-pilot-messages.jpg" />
+      <file href="audio/real_clip_01_7700KIND9-App-121100-Apr-09-2026-0030Z.mp3" />
+      <file href="audio/real_clip_02_AAL1511.mp3" />
+      <file href="audio/real_clip_03_Apr-21-2026-1500Z.mp3" />
+      <file href="audio/real_clip_04_asa671funKBFL-ZLA27-Sep-07-2026-0430Z.mp3" />
+      <file href="audio/real_clip_14_emergfumesPHOG2-HCF-Lanai-Molokai-Sep-20.mp3" />
+      <file href="audio/real_clip_21_flippedKSNA1-Gnd-120800-Nov-07-2026-2230.mp3" />
+      <file href="audio/real_clip_23_gearI68-CTAF-Aug-19-2026-0100Z.mp3" />
+      <file href="audio/real_clip_24_gearKCAE2-Twr-App-Jan-15-2026-1800Z.mp3" />
+      <file href="audio/real_clip_43_KDCA4-Heli-Aug-04-2026-1830Z_MarineOne_C.mp3" />
+      <file href="audio/real_clip_44_KDCA4-Heli-Jul-14-2026-1530Z_Eagle_to_Pe.mp3" />
+      <file href="audio/real_clip_49_May-23-2026-1330Z.mp3" />
+      <file href="audio/real_clip_50_maydayKFFZ-Twr-Both-Feb-06-2026-1530Z.mp3" />
+      <file href="audio/real_clip_51_mesaKIWA1-Twr-Oct-03-2026-2030Z.mp3" />
+      <file href="audio/real_clip_52_miaexecKTMB1-Twr-Both-Sep-17-2026-2130Z.mp3" />
+      <file href="audio/real_clip_53_nearmissKATL-Twr-8L-26R-Jul-28-2026-0300.mp3" />
+      <file href="audio/real_clip_54_nogasKCOE-Gnd-Twr-Nov-06-2026-0030Z.mp3" />
+      <file href="audio/real_clip_55_nosegearKCAK-Del-Gnd-Twr-Aug-18-2026-150.mp3" />
+      <file href="audio/real_clip_62_replacementKBOSdivertKBOS1-App-North-Jul.mp3" />
+      <file href="audio/gap_gap_atis_01_LFBO.wav" />
+      <file href="audio/gap_gap_clearance_01_LFBO.wav" />
+      <file href="audio/pilot_pilot_01_AirFrance6124.wav" />
+      <file href="audio/pilot_pilot_02_EasyJet4082.wav" />
+      <file href="audio/pilot_pilot_03_Lufthansa1094.wav" />
+      <file href="audio/pilot_pilot_04_Speedbird306.wav" />
+      <file href="audio/pilot_pilot_06_KLM1233.wav" />
+    </resource>
+  </resources>
+</manifest>
