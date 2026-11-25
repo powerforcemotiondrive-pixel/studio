@@ -1,0 +1,14 @@
+{
+  "name": "enac-gsea-studio",
+  "version": "1.0.0",
+  "description": "ENAC GSEA ATC Listening Comprehension Hub & SCORM 1.2 Studio",
+  "scripts": {
+    "test": "node scripts/validate.js",
+    "validate": "node scripts/validate.js",
+    "package": "node scripts/package-scorm.js",
+    "ingest": "node scripts/ingest.js"
+  },
+  "author": "Phil PARRIS",
+  "license": "UNLICENSED",
+  "private": true
+}

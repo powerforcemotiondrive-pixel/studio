@@ -1615,6 +1615,11 @@
       '</div>';
   }
 
+  function getFilteredPilotMessages() {
+    if (state.pilotFilter === "all") return DATA.pilotMessages;
+    return DATA.pilotMessages.filter(function(p) { return p.messageType === state.pilotFilter; });
+  }
+
   function renderPilot() {
     var list = getFilteredPilotMessages();
     var ex = list[state.pilotIdx] || list[0];
@@ -1770,7 +1775,7 @@
             (checked ? '<button class="btn" id="toggle-pilot-script">' + (state.showPilotScript[ex.id] ? 'Hide Spoken Script' : 'Show Spoken Script') + '</button>' : '') +
           '</div>' +
           '<div style="display:flex;gap:8px;">' +
-            '<button class="btn" id="prev-pilot"' + (state.pilotIdx === 0 ? ' disabled' : '') + '>← Previous Call</button>' +
+            '<button class="btn" id="prev-pilot" ' + (state.pilotIdx === 0 ? 'disabled' : '') + '>← Previous Call</button>' +
             '<button class="btn btn-primary" id="next-pilot"' + (state.pilotIdx >= list.length - 1 ? ' disabled' : '') + '>Next Call →</button>' +
           '</div>' +
         '</div>' +
