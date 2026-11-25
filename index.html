@@ -35,17 +35,17 @@
     -webkit-font-smoothing: antialiased;
   }
   header {
-    background: #1e293b;
-    border-bottom: 1px solid #0f172a;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: sticky;
     top: 0;
     z-index: 30;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
   }
   .header-inner {
-    max-width: 1200px;
+    max-width: 1240px;
     margin: 0 auto;
-    height: 60px;
+    height: 62px;
     padding: 0 24px;
     display: flex;
     align-items: center;
@@ -53,9 +53,9 @@
     gap: 20px;
   }
   .brand {
-    font-size: 14.5px;
+    font-size: 14px;
     font-weight: 800;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
     color: #ffffff;
     white-space: nowrap;
     display: flex;
@@ -65,43 +65,84 @@
   }
   .brand-badge {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 9.5px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.08em;
-    background: rgba(245, 158, 11, 0.15);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.35);
-    padding: 2.5px 7px;
-    border-radius: 4px;
+    background: rgba(217, 119, 6, 0.18);
+    color: #fbbf24;
+    border: 1px solid rgba(217, 119, 6, 0.45);
+    padding: 3px 8px;
+    border-radius: 6px;
   }
+  /* Segmented Aviation Capsule Track */
   nav {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 9999px;
+    padding: 4px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
   }
   nav button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 12.5px;
+    border-radius: 9999px;
+    padding: 6px 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: #94a3b8;
+    color: #e2e8f0;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.18s ease;
+    transition: all 0.15s ease;
   }
-  nav button:hover {
+  nav button:hover:not(.active) {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
   }
   nav button.active {
-    color: #0f172a;
-    background: #f59e0b;
-    border-color: #f59e0b;
+    background: #d97706;
+    border-color: #d97706;
+    color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.45);
+  }
+  .nav-icon {
+    font-size: 13.5px;
+    line-height: 1;
+  }
+  .nav-label {
+    letter-spacing: -0.01em;
+  }
+  .nav-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.14);
+    color: #cbd5e1;
+    transition: all 0.15s ease;
+  }
+  nav button:hover:not(.active) .nav-badge {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+  }
+  nav button.active .nav-badge {
+    background: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    font-weight: 800;
   }
   main {
     max-width: 1200px;
@@ -642,21 +683,7 @@
     .hero-title { font-size: 25px; }
   }
 
-  /* Signature Precision CAD Micro-Grid for Sticky Header */
-  header {
-    background-color: #1e293b !important;
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 75%),
-      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.18) 100%) !important;
-    background-size: 100% 100%, 16px 16px, 16px 16px, 100% 100% !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.15) !important;
-    border-bottom: 1px solid #0f172a;
-    position: sticky;
-    top: 0;
-    z-index: 30;
-  }
+  /* Clean Cockpit Header Styling */
 
   /* Section Picture Hero Banner */
   .section-hero-shell {
@@ -1189,19 +1216,25 @@
     var nav = document.getElementById('top-nav');
     var items = [];
     if (sectionCount >= 2) {
-      items.push(['home', 'Hub Home']);
+      items.push({ id: 'home', label: 'Hub Home', icon: '🏠', count: null });
     }
     if (DATA.realDrills.length > 0) {
-      items.push(['real', 'Section 1: Real ATC (' + DATA.realDrills.length + ')']);
+      items.push({ id: 'real', label: 'Real ATC', icon: '🎙️', count: DATA.realDrills.length });
     }
     if (DATA.gapExercises.length > 0) {
-      items.push(['gap', 'Section 2: ICAO Gap-Fill (' + DATA.gapExercises.length + ')']);
+      items.push({ id: 'gap', label: 'Ground Ops', icon: '🛫', count: DATA.gapExercises.length });
     }
     if (DATA.pilotMessages.length > 0) {
-      items.push(['pilot', 'Section 3: Pilot Messages (' + DATA.pilotMessages.length + ')']);
+      items.push({ id: 'pilot', label: 'Pilot Calls', icon: '👨‍✈️', count: DATA.pilotMessages.length });
     }
     nav.innerHTML = items.map(function(it) {
-      return '<button data-nav="' + it[0] + '" class="' + (state.view === it[0] ? 'active' : '') + '">' + esc(it[1]) + '</button>';
+      var isAct = state.view === it.id;
+      var countBadge = it.count !== null ? '<span class="nav-badge">' + it.count + '</span>' : '';
+      return '<button data-nav="' + it.id + '" class="' + (isAct ? 'active' : '') + '">' +
+        '<span class="nav-icon">' + it.icon + '</span>' +
+        '<span class="nav-label">' + esc(it.label) + '</span>' +
+        countBadge +
+      '</button>';
     }).join('');
     nav.querySelectorAll('button').forEach(function(btn) {
       btn.onclick = function() { state.view = btn.getAttribute('data-nav'); render(); };
