@@ -27,7 +27,7 @@ try {
 console.log('\nStep 2: Bundling SCORM 1.2 zip archive...');
 try {
   // Zip assets, audio, imsmanifest.xml, index.html
-  const cmd = `zip -r -q -FS "${ZIP_PATH}" index.html imsmanifest.xml .nojekyll assets/ audio/`;
+  const cmd = `zip -r -q -FS "${ZIP_PATH}" index.html imsmanifest.xml .nojekyll assets/ audio/ -x "*.DS_Store"`;
   cp.execSync(cmd, { cwd: ROOT_DIR });
   
   const stats = fs.statSync(ZIP_PATH);

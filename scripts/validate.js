@@ -107,7 +107,10 @@ try {
   // Extract DATA object
   const startIdx = htmlContent.indexOf('var DATA = {');
   if (startIdx !== -1) {
-    const endIdx = htmlContent.indexOf('};', startIdx);
+    const lfEnd = htmlContent.indexOf('};\n', startIdx);
+    const crlfEnd = htmlContent.indexOf('};\r\n', startIdx);
+    let endIdx = (lfEnd !== -1 && crlfEnd !== -1) ? Math.min(lfEnd, crlfEnd) : (lfEnd !== -1 ? lfEnd : crlfEnd);
+    if (endIdx === -1) endIdx = htmlContent.indexOf('};', startIdx);
     const rawDataStr = htmlContent.slice(startIdx + 11, endIdx + 1);
     const dataObj = JSON.parse(rawDataStr);
     
