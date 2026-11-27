@@ -1451,6 +1451,102 @@
     .drawer-body { padding: 16px 14px 36px; }
   }
 
+  /* Progress & Teacher Report View */
+  .progress-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .progress-stat-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .progress-stat-lbl {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 6px;
+  }
+  .progress-stat-val {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.2;
+  }
+  .progress-stat-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 4px 0 0;
+  }
+  .progress-section-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .progress-section-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .progress-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .progress-copy-toast {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ok-ink);
+    background: var(--ok-bg);
+    border: 1px solid var(--ok-bd);
+    border-radius: 6px;
+    padding: 4px 10px;
+    display: none;
+  }
+  .progress-log-wrap {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow-x: auto;
+    background: #ffffff;
+  }
+  .progress-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .progress-log-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f1f5f9;
+    border-bottom: 1px solid #cbd5e1;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  .progress-log-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    color: var(--ink);
+  }
+  .progress-log-table tr:last-child td { border-bottom: none; }
+  @media (max-width: 768px) {
+    .progress-summary-grid, .progress-section-grid { grid-template-columns: 1fr; }
+  }
+
 </style>
 </head>
 <body>
@@ -1501,11 +1597,13 @@
     showHints: false,
     showGapScript: {},
     showPilotScript: {},
+    scores: { real: {}, gap: {}, pilot: {} },
     speed: 1.0
   };
   var drawerMounted = false;
+  var STORAGE_KEY = 'enac_gsea_studio_progress_v1';
 
-  // Minimal SCORM 1.2 LMS bridge (completion only, no grade cutoff)
+  // SCORM 1.2 LMS bridge + offline auto-save (completion, score.raw, suspend_data, cmi.interactions)
   var scormApi = null;
   function findScorm(win) {
     var tries = 0;
@@ -1520,7 +1618,10 @@
     scormApi = findScorm(window) || (window.opener ? findScorm(window.opener) : null);
     if (scormApi) {
       scormApi.LMSInitialize('');
-      scormApi.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+      var initStatus = scormApi.LMSGetValue('cmi.core.lesson_status');
+      if (!initStatus || initStatus === 'not attempted') {
+        scormApi.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+      }
       scormApi.LMSCommit('');
     }
   } catch (e) {}
@@ -1532,15 +1633,183 @@
       }
     } catch (e) {}
   });
-  function markProgress() {
+
+  function serializeProgress() {
+    var payload = { v: 1, r: {}, g: {}, p: {} };
+    DATA.realDrills.forEach(function(d, idx) {
+      if (state.checkedReal[d.id]) {
+        var sc = state.scores.real[d.id] || { hits: 0, total: d.heardWords.length, wrong: 0 };
+        payload.r[idx] = [sc.hits || 0, sc.total || d.heardWords.length, sc.wrong || 0];
+      }
+    });
+    DATA.gapExercises.forEach(function(g, idx) {
+      if (state.checkedGap[g.id]) {
+        var sc = state.scores.gap[g.id] || { correct: 0, total: g.blanks.length };
+        payload.g[idx] = [sc.correct || 0, sc.total || g.blanks.length];
+      }
+    });
+    DATA.pilotMessages.forEach(function(p, idx) {
+      if (state.checkedPilot[p.id]) {
+        var sc = state.scores.pilot[p.id] || { correct: 0, total: p.blanks.length };
+        payload.p[idx] = [sc.correct || 0, sc.total || p.blanks.length];
+      }
+    });
+    return JSON.stringify(payload);
+  }
+
+  function deserializeProgress(raw) {
+    if (!raw || typeof raw !== 'string') return;
     try {
-      if (!scormApi) return;
-      var doneCount = Object.keys(state.checkedReal).length + Object.keys(state.checkedGap).length + Object.keys(state.checkedPilot).length;
-      if (doneCount > 0) {
-        scormApi.LMSSetValue('cmi.core.lesson_status', 'completed');
-        scormApi.LMSCommit('');
+      var parsed = JSON.parse(raw);
+      if (!parsed || parsed.v !== 1) return;
+      if (parsed.r) {
+        Object.keys(parsed.r).forEach(function(k) {
+          var d = DATA.realDrills[Number(k)];
+          var arr = parsed.r[k];
+          if (d && Array.isArray(arr)) {
+            state.checkedReal[d.id] = true;
+            var hits = Number(arr[0]) || 0;
+            var total = Number(arr[1]) || d.heardWords.length || 1;
+            var wrong = Number(arr[2]) || 0;
+            var pct = Math.round((Math.max(0, hits - wrong) / Math.max(1, total)) * 100);
+            state.scores.real[d.id] = { hits: hits, total: total, wrong: wrong, pct: pct };
+          }
+        });
+      }
+      if (parsed.g) {
+        Object.keys(parsed.g).forEach(function(k) {
+          var g = DATA.gapExercises[Number(k)];
+          var arr = parsed.g[k];
+          if (g && Array.isArray(arr)) {
+            state.checkedGap[g.id] = true;
+            var correct = Number(arr[0]) || 0;
+            var total = Number(arr[1]) || g.blanks.length || 1;
+            state.scores.gap[g.id] = { correct: correct, total: total, pct: Math.round((correct / Math.max(1, total)) * 100) };
+          }
+        });
+      }
+      if (parsed.p) {
+        Object.keys(parsed.p).forEach(function(k) {
+          var p = DATA.pilotMessages[Number(k)];
+          var arr = parsed.p[k];
+          if (p && Array.isArray(arr)) {
+            state.checkedPilot[p.id] = true;
+            var correct = Number(arr[0]) || 0;
+            var total = Number(arr[1]) || p.blanks.length || 1;
+            state.scores.pilot[p.id] = { correct: correct, total: total, pct: Math.round((correct / Math.max(1, total)) * 100) };
+          }
+        });
       }
     } catch (e) {}
+  }
+
+  function restoreProgress() {
+    var raw = '';
+    try {
+      if (scormApi) {
+        raw = scormApi.LMSGetValue('cmi.suspend_data') || '';
+      }
+    } catch (e) {}
+    if (!raw) {
+      try {
+        if (typeof localStorage !== 'undefined' && localStorage) {
+          raw = localStorage.getItem(STORAGE_KEY) || '';
+        }
+      } catch (e) {}
+    }
+    deserializeProgress(raw);
+  }
+
+  function getProgressSummary() {
+    var rows = [];
+    var realSum = 0, realDone = 0;
+    DATA.realDrills.forEach(function(d) {
+      if (state.checkedReal[d.id]) {
+        realDone++;
+        var sc = state.scores.real[d.id] || { hits: 0, total: d.heardWords.length, wrong: 0, pct: 0 };
+        realSum += sc.pct;
+        rows.push({
+          section: 'Section 1 · Real ATC',
+          title: d.title,
+          scoreText: sc.hits + '/' + sc.total + ' phrases' + (sc.wrong > 0 ? ' (-' + sc.wrong + ' dist.)' : ''),
+          pct: sc.pct
+        });
+      }
+    });
+    var gapSum = 0, gapDone = 0;
+    DATA.gapExercises.forEach(function(g) {
+      if (state.checkedGap[g.id]) {
+        gapDone++;
+        var sc = state.scores.gap[g.id] || { correct: 0, total: g.blanks.length, pct: 0 };
+        gapSum += sc.pct;
+        rows.push({
+          section: 'Section 2 · Ground Ops',
+          title: g.title + (g.airportIcao ? ' (' + g.airportIcao + ')' : ''),
+          scoreText: sc.correct + '/' + sc.total + ' gaps',
+          pct: sc.pct
+        });
+      }
+    });
+    var pilotSum = 0, pilotDone = 0;
+    DATA.pilotMessages.forEach(function(p) {
+      if (state.checkedPilot[p.id]) {
+        pilotDone++;
+        var sc = state.scores.pilot[p.id] || { correct: 0, total: p.blanks.length, pct: 0 };
+        pilotSum += sc.pct;
+        rows.push({
+          section: 'Section 3 · Pilot Calls',
+          title: p.title + (p.callsign ? ' (' + p.callsign + ')' : ''),
+          scoreText: sc.correct + '/' + sc.total + ' blanks',
+          pct: sc.pct
+        });
+      }
+    });
+    var totalDone = realDone + gapDone + pilotDone;
+    var totalAll = DATA.realDrills.length + DATA.gapExercises.length + DATA.pilotMessages.length;
+    var overallAvg = totalDone > 0 ? Math.round((realSum + gapSum + pilotSum) / totalDone) : 0;
+    return {
+      realDone: realDone, realTotal: DATA.realDrills.length, realAvg: realDone > 0 ? Math.round(realSum / realDone) : 0,
+      gapDone: gapDone, gapTotal: DATA.gapExercises.length, gapAvg: gapDone > 0 ? Math.round(gapSum / gapDone) : 0,
+      pilotDone: pilotDone, pilotTotal: DATA.pilotMessages.length, pilotAvg: pilotDone > 0 ? Math.round(pilotSum / pilotDone) : 0,
+      totalDone: totalDone, totalAll: totalAll, overallAvg: overallAvg,
+      rows: rows
+    };
+  }
+
+  function saveProgress(interactionInfo) {
+    var json = serializeProgress();
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        localStorage.setItem(STORAGE_KEY, json);
+      }
+    } catch (e) {}
+    try {
+      if (!scormApi) return;
+      var summary = getProgressSummary();
+      scormApi.LMSSetValue('cmi.core.score.min', '0');
+      scormApi.LMSSetValue('cmi.core.score.max', '100');
+      scormApi.LMSSetValue('cmi.core.score.raw', String(summary.overallAvg));
+      scormApi.LMSSetValue('cmi.core.lesson_status', summary.totalDone > 0 ? 'completed' : 'incomplete');
+      if (json.length <= 4096) {
+        scormApi.LMSSetValue('cmi.suspend_data', json);
+      }
+      if (interactionInfo && interactionInfo.id) {
+        var countRaw = scormApi.LMSGetValue('cmi.interactions._count');
+        var idx = Number(countRaw);
+        if (!isFinite(idx) || idx < 0) idx = 0;
+        var safeId = String(interactionInfo.id).replace(/[^a-zA-Z0-9_.-]/g, '_').slice(0, 64);
+        scormApi.LMSSetValue('cmi.interactions.' + idx + '.id', safeId);
+        scormApi.LMSSetValue('cmi.interactions.' + idx + '.type', 'fill-in');
+        scormApi.LMSSetValue('cmi.interactions.' + idx + '.student_response', String(interactionInfo.response || ''));
+        scormApi.LMSSetValue('cmi.interactions.' + idx + '.result', interactionInfo.pct >= 70 ? 'correct' : 'wrong');
+        scormApi.LMSSetValue('cmi.interactions.' + idx + '.weighting', '1');
+      }
+      scormApi.LMSCommit('');
+    } catch (e) {}
+  }
+
+  function markProgress(interactionInfo) {
+    saveProgress(interactionInfo);
   }
 
   function esc(str) {
@@ -1702,6 +1971,7 @@
     if (DATA.pilotMessages.length > 0) {
       items.push({ id: 'pilot', label: 'Pilot Calls', icon: '👨‍✈️', count: DATA.pilotMessages.length });
     }
+    items.push({ id: 'progress', label: 'Progress', icon: '📊', count: getProgressSummary().totalDone });
     nav.innerHTML = items.map(function(it) {
       var isAct = state.view === it.id;
       var countBadge = it.count !== null ? '<span class="nav-badge">' + it.count + '</span>' : '';
@@ -2308,6 +2578,86 @@
       '</div>';
   }
 
+  function renderProgress() {
+    var s = getProgressSummary();
+    var trackingMode = scormApi ? 'Moodle SCORM 1.2 Active' : 'Browser Auto-Save (Offline / GitHub)';
+    var trackingNote = scormApi
+      ? 'Scores, completed clips, and per-clip results sync automatically to Moodle.'
+      : 'Saved locally in your browser. Export CSV or copy your summary to share with your teacher.';
+
+    var rowsHtml = s.rows.length > 0 ? (
+      '<div class="progress-log-wrap">' +
+        '<table class="progress-log-table">' +
+          '<thead><tr><th>Section</th><th>Clip / Exercise</th><th>Result</th><th>Accuracy</th></tr></thead>' +
+          '<tbody>' +
+            s.rows.map(function(r) {
+              var badgeColor = r.pct >= 70 ? 'color:var(--ok-ink);background:var(--ok-bg);' : 'color:var(--miss-ink);background:var(--miss-bg);';
+              return '<tr>' +
+                '<td style="white-space:nowrap;font-weight:600;">' + esc(r.section) + '</td>' +
+                '<td>' + esc(r.title) + '</td>' +
+                '<td style="font-family:ui-monospace,Menlo,monospace;white-space:nowrap;">' + esc(r.scoreText) + '</td>' +
+                '<td><span style="padding:2px 8px;border-radius:9999px;font-weight:700;font-size:12px;' + badgeColor + '">' + r.pct + '%</span></td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>' +
+      '</div>'
+    ) : '<div class="feedback-box" style="margin-bottom:0;">No clips checked yet. Open Section 1, 2, or 3 and click <strong>Check My Answers</strong> to start recording your progress.</div>';
+
+    return '<div class="progress-summary-grid">' +
+        '<div class="progress-stat-card">' +
+          '<p class="progress-stat-lbl">Clips Completed</p>' +
+          '<p class="progress-stat-val">' + s.totalDone + ' / ' + s.totalAll + '</p>' +
+          '<p class="progress-stat-sub">' + (s.totalAll > 0 ? Math.round((s.totalDone / s.totalAll) * 100) : 0) + '% of full hub practiced</p>' +
+        '</div>' +
+        '<div class="progress-stat-card">' +
+          '<p class="progress-stat-lbl">Average Accuracy</p>' +
+          '<p class="progress-stat-val">' + s.overallAvg + '%</p>' +
+          '<p class="progress-stat-sub">Across ' + s.totalDone + ' completed exercise' + (s.totalDone === 1 ? '' : 's') + '</p>' +
+        '</div>' +
+        '<div class="progress-stat-card">' +
+          '<p class="progress-stat-lbl">Tracking Mode</p>' +
+          '<p class="progress-stat-val" style="font-size:16px;padding-top:4px;">' + esc(trackingMode) + '</p>' +
+          '<p class="progress-stat-sub">' + esc(trackingNote) + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="stage-card">' +
+        '<div class="stage-head">' +
+          '<div class="stage-head-left">' +
+            '<span class="stage-num-badge amber">Sections</span>' +
+            '<div>' +
+              '<h2 class="stage-title">Progress by Listening Section</h2>' +
+              '<p class="stage-help-text">Completion count and average accuracy per module.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="progress-section-grid">' +
+          '<div class="progress-section-card">' +
+            '<p class="progress-stat-lbl">Section 1 · Real ATC</p>' +
+            '<p class="progress-stat-val" style="font-size:20px;">' + s.realDone + ' / ' + s.realTotal + '</p>' +
+            '<p class="progress-stat-sub">Avg accuracy: ' + s.realAvg + '%</p>' +
+          '</div>' +
+          '<div class="progress-section-card">' +
+            '<p class="progress-stat-lbl">Section 2 · Ground Ops</p>' +
+            '<p class="progress-stat-val" style="font-size:20px;">' + s.gapDone + ' / ' + s.gapTotal + '</p>' +
+            '<p class="progress-stat-sub">Avg accuracy: ' + s.gapAvg + '%</p>' +
+          '</div>' +
+          '<div class="progress-section-card">' +
+            '<p class="progress-stat-lbl">Section 3 · Pilot Calls</p>' +
+            '<p class="progress-stat-val" style="font-size:20px;">' + s.pilotDone + ' / ' + s.pilotTotal + '</p>' +
+            '<p class="progress-stat-sub">Avg accuracy: ' + s.pilotAvg + '%</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="progress-action-row">' +
+          '<button type="button" class="btn btn-primary" id="copy-progress-btn">📋 Copy Summary for Teacher</button>' +
+          '<button type="button" class="btn" id="csv-progress-btn">⬇️ Download CSV Report</button>' +
+          '<button type="button" class="btn" id="reset-progress-btn" style="margin-left:auto;">🗑️ Reset Progress</button>' +
+          '<span id="progress-copy-toast" class="progress-copy-toast">Copied to clipboard!</span>' +
+        '</div>' +
+        rowsHtml +
+      '</div>';
+  }
+
   function wrapInDrawer(drawerContent, tag, title) {
     return '<div class="hub-underlay" aria-hidden="true">' + renderHome() + '</div>' +
       '<div id="drawer-backdrop" class="drawer-backdrop" role="button" aria-label="Close exercise drawer"></div>' +
@@ -2393,6 +2743,10 @@
       tag = 'SECTION 3 · PILOT CALLS';
       title = 'Routine & Non-Routine Pilot Messages (' + DATA.pilotMessages.length + ' Calls)';
       contentHtml = renderPilot();
+    } else if (state.view === 'progress') {
+      tag = 'PROGRESS · REPORT';
+      title = 'Listening Progress & Teacher Report';
+      contentHtml = renderProgress();
     } else {
       tag = 'SECTION 2 · GROUND OPS';
       title = 'European & ICAO Ground Operations Gap-Fill (' + DATA.gapExercises.length + ' Drills)';
@@ -2454,9 +2808,26 @@
         };
       });
       var chk = document.getElementById('check-real');
-      if (chk) chk.onclick = function() { state.checkedReal[drill.id] = true; markProgress(); render({ preserveScroll: true }); };
+      if (chk) chk.onclick = function() {
+        var sel = state.selectedWords[drill.id] || {};
+        var hits = 0, wrong = 0;
+        drill.heardWords.forEach(function(w) { if (sel[w]) hits++; });
+        drill.distractorWords.forEach(function(w) { if (sel[w]) wrong++; });
+        var total = drill.heardWords.length || 1;
+        var pct = Math.round((Math.max(0, hits - wrong) / total) * 100);
+        state.checkedReal[drill.id] = true;
+        state.scores.real[drill.id] = { hits: hits, total: total, wrong: wrong, pct: pct };
+        markProgress({ id: 'S1_' + drill.id, response: hits + '/' + total + ' (' + pct + '%)', pct: pct });
+        render({ preserveScroll: true });
+      };
       var retry = document.getElementById('retry-real');
-      if (retry) retry.onclick = function() { delete state.checkedReal[drill.id]; state.selectedWords[drill.id] = {}; render({ preserveScroll: true }); };
+      if (retry) retry.onclick = function() {
+        delete state.checkedReal[drill.id];
+        delete state.scores.real[drill.id];
+        state.selectedWords[drill.id] = {};
+        saveProgress();
+        render({ preserveScroll: true });
+      };
       var prev = document.getElementById('prev-real');
       if (prev) prev.onclick = function() { if (state.realIdx > 0) { state.realIdx--; render(); } };
       var next = document.getElementById('next-real');
@@ -2502,15 +2873,102 @@
         });
       };
       var cp = document.getElementById('check-pilot');
-      if (cp) cp.onclick = function() { state.checkedPilot[pEx.id] = true; markProgress(); render({ preserveScroll: true }); };
+      if (cp) cp.onclick = function() {
+        var vals = state.pilotValues[pEx.id] || {};
+        var correct = 0;
+        var total = pEx.blanks.length || 1;
+        pEx.blanks.forEach(function(blank, idx) {
+          var nVal = normAns(vals[idx] || '');
+          if (blank.acceptedAnswers.some(function(a) { return normAns(a) === nVal; }) || normAns(blank.answer) === nVal) {
+            correct++;
+          }
+        });
+        var pct = Math.round((correct / total) * 100);
+        state.checkedPilot[pEx.id] = true;
+        state.scores.pilot[pEx.id] = { correct: correct, total: total, pct: pct };
+        markProgress({ id: 'S3_' + pEx.id, response: correct + '/' + total + ' (' + pct + '%)', pct: pct });
+        render({ preserveScroll: true });
+      };
       var rp = document.getElementById('retry-pilot');
-      if (rp) rp.onclick = function() { delete state.checkedPilot[pEx.id]; state.pilotValues[pEx.id] = {}; render({ preserveScroll: true }); };
+      if (rp) rp.onclick = function() {
+        delete state.checkedPilot[pEx.id];
+        delete state.scores.pilot[pEx.id];
+        state.pilotValues[pEx.id] = {};
+        saveProgress();
+        render({ preserveScroll: true });
+      };
       var tps = document.getElementById('toggle-pilot-script');
       if (tps) tps.onclick = function() { state.showPilotScript[pEx.id] = !state.showPilotScript[pEx.id]; render({ preserveScroll: true }); };
       var pp = document.getElementById('prev-pilot');
       if (pp) pp.onclick = function() { if (state.pilotIdx > 0) { state.pilotIdx--; render(); } };
       var np = document.getElementById('next-pilot');
       if (np) np.onclick = function() { if (state.pilotIdx < pList.length - 1) { state.pilotIdx++; render(); } };
+      return;
+    }
+
+    if (state.view === 'progress') {
+      var copyBtn = document.getElementById('copy-progress-btn');
+      var csvBtn = document.getElementById('csv-progress-btn');
+      var resetBtn = document.getElementById('reset-progress-btn');
+      if (copyBtn) copyBtn.onclick = function() {
+        var s = getProgressSummary();
+        var lines = [
+          'ENAC GSEA Listening Comprehension Hub — Progress Summary',
+          'Date: ' + new Date().toISOString().slice(0, 10),
+          'Completed: ' + s.totalDone + '/' + s.totalAll + ' clips | Average Accuracy: ' + s.overallAvg + '%',
+          'Section 1 (Real ATC): ' + s.realDone + '/' + s.realTotal + ' (' + s.realAvg + '%)',
+          'Section 2 (Ground Ops): ' + s.gapDone + '/' + s.gapTotal + ' (' + s.gapAvg + '%)',
+          'Section 3 (Pilot Calls): ' + s.pilotDone + '/' + s.pilotTotal + ' (' + s.pilotAvg + '%)',
+          ''
+        ].concat(s.rows.map(function(r) {
+          return '- [' + r.section + '] ' + r.title + ': ' + r.scoreText + ' (' + r.pct + '%)';
+        }));
+        var text = lines.join('\n');
+        var showToast = function() {
+          var t = document.getElementById('progress-copy-toast');
+          if (t) {
+            t.style.display = 'inline-block';
+            setTimeout(function() { if (t) t.style.display = 'none'; }, 2500);
+          }
+        };
+        if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(showToast).catch(function() {
+            if (typeof window !== 'undefined' && window.prompt) window.prompt('Copy progress summary:', text);
+          });
+        } else if (typeof window !== 'undefined' && window.prompt) {
+          window.prompt('Copy progress summary:', text);
+        }
+      };
+      if (csvBtn) csvBtn.onclick = function() {
+        var s = getProgressSummary();
+        var csvCell = function(v) { return '"' + String(v || '').replace(/"/g, '""') + '"'; };
+        var csvLines = ['"Section","Exercise","Result","Accuracy (%)"'].concat(s.rows.map(function(r) {
+          return [csvCell(r.section), csvCell(r.title), csvCell(r.scoreText), csvCell(r.pct)].join(',');
+        }));
+        try {
+          var blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'ENAC_GSEA_Listening_Progress_' + new Date().toISOString().slice(0, 10) + '.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (e) {}
+      };
+      if (resetBtn) resetBtn.onclick = function() {
+        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Reset all recorded clip completions and scores?')) return;
+        state.checkedReal = {};
+        state.checkedGap = {};
+        state.checkedPilot = {};
+        state.selectedWords = {};
+        state.gapValues = {};
+        state.pilotValues = {};
+        state.scores = { real: {}, gap: {}, pilot: {} };
+        saveProgress();
+        render({ preserveScroll: false });
+      };
       return;
     }
 
@@ -2552,9 +3010,30 @@
       });
     };
     var cg = document.getElementById('check-gap');
-    if (cg) cg.onclick = function() { state.checkedGap[ex.id] = true; markProgress(); render({ preserveScroll: true }); };
+    if (cg) cg.onclick = function() {
+      var vals = state.gapValues[ex.id] || {};
+      var correct = 0;
+      var total = ex.blanks.length || 1;
+      ex.blanks.forEach(function(blank, idx) {
+        var nVal = normAns(vals[idx] || '');
+        if (blank.acceptedAnswers.some(function(a) { return normAns(a) === nVal; }) || normAns(blank.answer) === nVal) {
+          correct++;
+        }
+      });
+      var pct = Math.round((correct / total) * 100);
+      state.checkedGap[ex.id] = true;
+      state.scores.gap[ex.id] = { correct: correct, total: total, pct: pct };
+      markProgress({ id: 'S2_' + ex.id, response: correct + '/' + total + ' (' + pct + '%)', pct: pct });
+      render({ preserveScroll: true });
+    };
     var rg = document.getElementById('retry-gap');
-    if (rg) rg.onclick = function() { delete state.checkedGap[ex.id]; state.gapValues[ex.id] = {}; render({ preserveScroll: true }); };
+    if (rg) rg.onclick = function() {
+      delete state.checkedGap[ex.id];
+      delete state.scores.gap[ex.id];
+      state.gapValues[ex.id] = {};
+      saveProgress();
+      render({ preserveScroll: true });
+    };
     var tgs = document.getElementById('toggle-gap-script');
     if (tgs) tgs.onclick = function() { state.showGapScript[ex.id] = !state.showGapScript[ex.id]; render({ preserveScroll: true }); };
     var pg = document.getElementById('prev-gap');
@@ -2574,6 +3053,7 @@
     }
   });
 
+  restoreProgress();
   render();
 })();
 </script>
